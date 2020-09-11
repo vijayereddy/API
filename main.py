@@ -1,11 +1,13 @@
 import os
-import urllib.request
-from app import app
-from flask import Flask, request, redirect, jsonify
+from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from zipfile import ZipFile
 
 ALLOWED_EXTENSIONS = set(['zip'])
+UPLOAD_FOLDER = 'uploads'
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
 def allowed_file(filename):
@@ -27,8 +29,8 @@ def upload_file():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         filename = 'uploads/'+filename
         with ZipFile(filename, 'r') as zip:
-            zip.extractall('extracted')
-            path = 'extracted/'
+            zip.extractall('extracted'+filename)
+            path = 'extracted'+filename
             files = []
             for r, d, f in os.walk(path):
                 for file in f:
@@ -41,4 +43,5 @@ def upload_file():
         return resp
 
 if __name__ == "__main__":
+    app.secret_key = '1234'
     app.run(port = 5001)

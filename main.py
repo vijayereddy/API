@@ -33,7 +33,7 @@ def upload_file():
             files = []
             for r, d, f in os.walk(path):
                 for file in f:
-                    if '.csv' in file:
+                    if '.csv' or '.xlsx' or '.xls' in file:
                         files.append(os.path.join(r, file))
             resp = jsonify({'files extracted': files})
         return resp

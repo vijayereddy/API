@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 from zipfile import ZipFile
 
@@ -13,8 +13,11 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route("/", methods=['GET'])
+def fileFrontPage():
+    return render_template('index.html')
 
-@app.route('/', methods=['POST'])
+@app.route('/uploadfile', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         resp = jsonify({'message': 'No file part in the request'})

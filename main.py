@@ -1,6 +1,7 @@
+import json
 import os
-from flask import Flask, request, jsonify, render_template
-from werkzeug.utils import secure_filename
+from flask import Flask, request, render_template
+from werkzeug.utils import secure_filename, html
 from zipfile import ZipFile
 
 ALLOWED_EXTENSIONS = set(['zip'])
@@ -20,11 +21,11 @@ def fileFrontPage():
 @app.route('/uploadfile', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        resp = jsonify({'message': 'No file part in the request'})
+        resp = html.format('No file part in the request')
         return resp
     file = request.files['file']
     if file.filename == '':
-        resp = jsonify({'message': 'No file selected for uploading'})
+        resp = html.format('No file selected for uploading')
         return resp
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -38,10 +39,10 @@ def upload_file():
                 for file in f:
                     if '.csv' or '.xlsx' or '.xls' in file:
                         files.append(os.path.join(r, file))
-            resp = jsonify({'files extracted': files})
+            resp = json.dumps(files)
         return resp
     else:
-        resp = jsonify({'message': 'Allowed file type is zip'})
+        resp = html.format('Allowed file type is zip only')
         return resp
 
 if __name__ == "__main__":
